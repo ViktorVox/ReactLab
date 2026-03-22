@@ -1,16 +1,30 @@
-# React + Vite
+# ReactLab
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**ReactLab** — это frontend-клиент (SPA) для проекта LaravelLab. Приложение написано на React и работает с независимым REST API бэкендом по принципу Headless-архитектуры. 
 
-Currently, two official plugins are available:
+## Технологический стек
+* **Сборщик:** Vite
+* **Интерфейс:** React (JavaScript)
+* **HTTP-клиент:** Axios
+* **Связь с Backend:** REST API
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## План разработки (Интеграция с Laravel API)
+- [x] Инициализация проекта и настройка Vite.
+- [x] Настройка CORS и успешная стыковка с бэкендом.
+- [ ] **Create:** Добавление новых задач/книг/авторов.
+- [x] **Read:** Получение и вывод списка прочего.
+- [ ] **Update:** Обновление статуса/текста задач/книг/авторов.
+- [ ] **Delete:** Удаление прочего.
+- [ ] Интеграция авторизации Laravel Sanctum (SPA Authentication).
 
-## React Compiler
+## Установка и запуск
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. Установите зависимости:
+   ```bash
+   npm install
+   ```
+2. Запустить локальный сервер разработчика:
+   ```bash
+   npm run dev
+   ```
+   Примечание: Для корректной работы приложения необходимо, чтобы бэкенд LaravelLab был запущен на порту 8000.
