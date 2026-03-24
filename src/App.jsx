@@ -2,107 +2,124 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 function App() {
-  const [tasks, setTasks] = useState([]);
-  const [newTask, setNewTask] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [token, setToken] = useState(() => localStorage.getItem("token") || "");
+  const [user, setUser] = useState(
+    () => JSON.parse(localStorage.getItem("user")) || null,
+  );
+  const [isLogin, setIsLogin] = useState(true);
 
-  const addTask = (e) => {
-    // Блокируем перезагрузку страницы
+  function handleRegister(e) {
     e.preventDefault();
-
-    // Отправляем POST-запрос
     axios
-      .post("http://127.0.0.1:8000/api/tasks", {
-        title: newTask, // Отправляем на бэкенд наш текст из стейта
-      })
+      .post("http://127.0.0.1:8000/api/register", { name, email, password })
       .then((response) => {
-        // Очищаем инпут (чтобы можно было вводить новую задачу)
-        setNewTask("");
-
-        // Обновляем список задач на экране, добавляя новую задачу в конец массива
-        setTasks([...tasks, response.data.data]);
+        setToken(response.data.token);
+        setUser(response.data.data);
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.data));
       })
       .catch((error) => {
-        console.error("Ошибка при добавлении:", error);
+        console.error(error);
       });
-  };
+  }
 
-  useEffect(() => {
-    axios.get("http://127.0.0.1:8000/api/tasks").then((response) => {
-      setTasks(response.data.data);
-    });
-  }, []);
-
-  const toggleTask = (task) => {
-    // Инвертируем текущий статус: если было false, станет true, и наоборот
-    const updatedStatus = !task.is_completed;
-
-    // Отправляем PUT-запрос (обновление)
+  function handleLogout() {
     axios
-      .put(`http://127.0.0.1:8000/api/tasks/${task.id}`, {
-        is_completed: updatedStatus,
-      })
+      .post(
+        "http://127.0.0.1:8000/api/logout",
+        {},
+        { headers: { Authorization: `Bearer ${token}` } },
+      )
       .then(() => {
-        // Если сервер ответил успехом, обновляем интерфейс:
-        setTasks(
-          tasks.map((t) => {
-            // Ищем нашу задачу по ID и меняем ей статус локально
-            if (t.id === task.id) {
-              return { ...t, is_completed: updatedStatus };
-            }
-            // Остальные задачи возвращаем без изменений
-            return t;
-          }),
-        );
+        localStorage.clear();
+        setToken("");
+        setUser(null);
       })
       .catch((error) => {
-        console.error("Ошибка при обновлении:", error);
+        console.error(error);
       });
-  };
+  }
 
-  const deleteTask = (id) => {
+  function handleLogin(e) {
+    e.preventDefault();
     axios
-      .delete(`http://127.0.0.1:8000/api/tasks/${id}`)
-      .then(() => {
-        setTasks(tasks.filter((task) => task.id !== id));
+      .post("http://127.0.0.1:8000/api/login", { email, password })
+      .then((response) => {
+        setToken(response.data.token);
+        setUser(response.data.data);
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.data));
       })
       .catch((error) => {
-        console.error("Ошибка при удалении:", error);
+        console.error(error);
       });
-  };
+  }
 
   return (
     <div>
-      <h1>Мои задачи на Laravel</h1>
+      <header>
+        <h2>ReactLab</h2>
+        <nav>
+          <a href="#">Hub</a>
+          <a href="#">Contacts</a>
+          <button onClick={handleLogout}>
+            {user === null ? "Login / Register" : "Log Out"}
+          </button>
+        </nav>
+      </header>
 
-      <form onSubmit={addTask}>
-        <input
-          type="text"
-          value={newTask}
-          onChange={(e) => setNewTask(e.target.value)}
-        />
-        <button>Добавить</button>
-      </form>
+      <main>
+        <h1>Hello, {user === null ? "Guest" : user.name}</h1>
 
-      <ul>
-        {tasks.map((task) => (
-          <li key={task.id}>
-            <input
-              type="checkbox"
-              checked={!!task.is_completed} // !! превращает null в false, чтобы React не ругался
-              onChange={() => toggleTask(task)}
-            />
-            <span
-              style={{
-                textDecoration: task.is_completed ? "line-through" : "none",
-              }}
-            >
-              {task.id}. {task.title} - {task.description}
-            </span>
+        
+        
+        { user === null ? (<>
+        <form onSubmit={isLogin === false ? handleRegister : handleLogin}>
+          {isLogin === false ? (
+            <>
+              <input
+                type="text"
+                name="name"
+                placeholder="Write name.."
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <br />
+            </>
+          ) : (
+            ""
+          )}
+          <input
+            type="email"
+            name="email"
+            placeholder="Write email.."
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <br />
+          <input
+            type="password"
+            name="password"
+            placeholder="Write Password.."
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <br />
+          <button type="submit">Send</button>
+        </form>
 
-            <button onClick={() => deleteTask(task.id)}>Удалить</button>
-          </li>
-        ))}
-      </ul>
+        <button
+          onClick={() => {
+            setIsLogin(!isLogin);
+          }}
+        >
+          {!isLogin ? "Login" : "Register"}
+        </button>
+        </>) : ("")}
+      </main>
     </div>
   );
 }
