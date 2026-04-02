@@ -1,6 +1,6 @@
+import { Link } from "react-router-dom";
 import axios from "axios";
 
-// Ловим пропсы (рации) от App.jsx
 export default function Navbar({ user, setToken, setUser }) {
   function handleLogout() {
     const currentToken = localStorage.getItem("token");
@@ -25,8 +25,8 @@ export default function Navbar({ user, setToken, setUser }) {
     <>
       <h2>ReactLab</h2>
       <nav>
-        <a href="#">Hub</a>
-        <a href="#">Contacts</a>
+        <Link to="/">Модули</Link>
+        <Link to="/contacts">Контакты</Link>
 
         {/* Если пользователь есть, показываем кнопку Log Out, если нет - ничего */}
         {user !== null ? (

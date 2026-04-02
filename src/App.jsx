@@ -1,9 +1,11 @@
+import { Routes, Route, Link } from "react-router-dom";
 import { useState } from "react";
 
-// Импортируем модули
+// Импортируем страницы
+import Library from "./pages/Library";
+
+// Импортируем компоненты
 import AuthForm from "./components/AuthForm";
-import BookForm from "./components/BookForm";
-import BookList from "./components/BookList";
 import Navbar from "./components/Navbar";
 
 function App() {
@@ -19,22 +21,65 @@ function App() {
         <Navbar user={user} setToken={setToken} setUser={setUser} />
       </header>
 
-      {/* Регистрация / Вход */}
-      <main>
-        <h3>Hello, {user === null ? "Guest" : user.name}</h3>
-
-        {user === null ? (
+      {user === null ? (
+        <main>
           <AuthForm setToken={setToken} setUser={setUser} />
-        ) : (
-          ""
-        )}
-      </main>
+        </main>
+      ) : (
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <main>
+                <h2>Модули</h2>
+                <div>
+                  <section>
+                    <Link to="/books">
+                      <img src="#" alt="Books" />
+                    </Link>
+                    <h3>Книги</h3>
+                    <p>Блок с реализацией CRUD книг.</p>
+                  </section>
+                  <section>
+                    <Link to="/authors">
+                      <img src="#" alt="Authors" />
+                    </Link>
+                    <h3>Авторы</h3>
+                    <p>Блок с реализацией CRUD авторов.</p>
+                  </section>
+                  <section>
+                    <Link to="/tasks">
+                      <img src="#" alt="Tasks" />
+                    </Link>
+                    <h3>Задачи</h3>
+                    <p>Блок с реализацией CRUD задач.</p>
+                  </section>
+                  <section>
+                    <Link to="/parser">
+                      <img src="#" alt="Parser" />
+                    </Link>
+                    <h3>Парсер</h3>
+                    <p>Блок с реализацией парсера.</p>
+                  </section>
+                  <section>
+                    <Link to="/crm">
+                      <img src="#" alt="CRM" />
+                    </Link>
+                    <h3>Задачи</h3>
+                    <p>
+                      Блок с реализацией CRM с разделением на админ и
+                      пользовтельскую часть.
+                    </p>
+                  </section>
+                </div>
+              </main>
+            }
+          />
 
-      {/* Библиотека */}
-      <main>
-        <BookForm token={token} />
-        <BookList token={token} />
-      </main>
+          {/* Модуль библиотеки */}
+          <Route path="/books" element={<Library token={token} />} />
+        </Routes>
+      )}
     </div>
   );
 }
